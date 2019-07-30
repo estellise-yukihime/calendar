@@ -38,19 +38,10 @@ class EventsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($fromDate = null, $toDate = null)
+    public function show()
     {
-        $event_dates = null;
-
-        if ($fromDate && $toDate) {
-            $event_dates = Events::where('date', '>=', date('Y-m-d', strtotime($fromDate)))
-                ->where('date', '<=', date('Y-m-d', strtotime($toDate)))
-                ->orderBy('date', 'asc')
-                ->get();
-        } else {
-            $event_dates = Events::orderBy('date', 'asc')
-                ->get();
-        }
+        $event_dates = Events::orderBy('date', 'asc')
+            ->get();
 
         return EventsResource::collection($event_dates);
     }

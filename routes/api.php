@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 
 # Show Events
 //Route::get('events/', 'EventsController@show_all');
-Route::get('events/{fromdate?}/{todate?}', 'EventsController@show');
+Route::get('events/', 'EventsController@show');
 
 # add events
 Route::post('events', 'EventsController@store');

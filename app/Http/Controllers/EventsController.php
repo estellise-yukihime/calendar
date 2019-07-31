@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Events;
 use App\Http\Resources\EventsResource;
 use Carbon\Carbon;
+use App\Models\MonthEvents;
+use App\Http\Resources\MonthEventsResource;
+use App\Http\Resources\DayEventsResources;
+use App\Models\DayEvents;
+use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
 {
@@ -17,19 +21,45 @@ class EventsController extends Controller
      */
     public function store(Request $request)
     {
+
         $date = $request->input("year");
         $dayMonth = $request->input("daysMonth");
         $description = $request->input("description") != "" ? $request->input("description") : "";
 
-        $event_collections = collect([]);
+        $eventCollections = collect([]);
 
-        Events::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('month_events')->truncate();
+        DB::table('day_events')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        foreach ($dayMonth as $day) {
-            $event_collections->push(Events::firstOrCreate(["date" => date('Y-m-d', strtotime($date . '-' . $day[0] . '-' . $day[1]))], ['name' => $description]));
+        foreach ($dayMonth as $days) {
+
+            $month = $days[0];
+            $day = $days[1];
+
+            $monthYear = MonthEvents::firstOrCreate(["date" => date('Y-m-d', strtotime($date . '-' . $month . '-01'))]);
+
+            DB::beginTransaction();
+            try {
+
+                $dayEvents = new DayEvents();
+
+                $dayEvents->month_year_id = $monthYear->id;
+                $dayEvents->day = $day;
+                $dayEvents->description = $description;
+
+                $dayEvents->save();
+
+                DB::commit();
+            } catch (\Exception $ex) {
+                DB::rollback();
+            }
+
+            $eventCollections->push($monthYear);
         }
 
-        return EventsResource::collection($event_collections);
+        return MonthEventsResource::collection($eventCollections);
     }
 
     /**
@@ -40,9 +70,10 @@ class EventsController extends Controller
      */
     public function show()
     {
-        $event_dates = Events::orderBy('date', 'asc')
+        $event_dates = MonthEvents::orderBy('date', 'asc')
             ->get();
 
-        return EventsResource::collection($event_dates);
+
+        return MonthEventsResource::collection($event_dates);
     }
 }

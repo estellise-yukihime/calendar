@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEventsTable extends Migration
+class CreateMonthEventsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('day_events', function (Blueprint $table) {
+        Schema::create('month_events', function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
-            $table->increments('id');
-            $table->unsignedSmallInteger('day')->default(1);
-            $table->text('description')->nullable(true);
+            $table->smallIncrements('id');
+            $table->date("date");
         });
     }
 
@@ -29,6 +28,6 @@ class CreateEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('day_events');
+        Schema::dropIfExists('month_events');
     }
 }

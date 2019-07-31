@@ -93,10 +93,42 @@ export default {
         .get("api/events")
         .then(res => res.data)
         .then(function(res) {
-          if (Array.isArray(res.data) && res.data.length !== 0) {
-            self.catchEvents(res.data);
-            self.dates(res.data);
+          // new fetch api
+          /*
+          let data = res.data;
+          let events = [];
+
+          console.log(data);
+
+          for (let i = 0; i < data.length; i++) {
+            let event = {};
+
+            event.year = data[i].year;
+            event.month = data[i].month;
+            event.nameOfMonth = data[i].nameOfMonth;
+
+            event.eventDays = [];
+
+            for (let i = 1; i <= event.totalDaysOfMonth; i++) {
+              let eventDays = {};
+
+              eventDays.day = i;
+              eventDays.activated = false;
+
+              for (let x = 0; x < data[i].eventDays.length; x++) {
+                if (data[i].eventDays[x].day == i) {
+                  eventDays.activated = true;
+                  eventDays.description = data[i].eventDays[x].description;
+                  break;
+                }
+              }
+            }
           }
+          */
+          //if (Array.isArray(res.data) && res.data.length !== 0) {
+          //  self.catchEvents(res.data);
+          //  self.dates(res.data);
+          //}
         })
         .catch(err => console.log(err));
     },

@@ -60,7 +60,7 @@ export default {
       let startOfDate = this.date[0];
       let endOfDate = this.date[1];
 
-      events.year = startOfDate.getFullYear();
+      events.year = new Date().getFullYear();
       events.description = this.description;
       events.daysMonth = [];
 

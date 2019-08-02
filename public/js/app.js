@@ -50942,7 +50942,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var startOfDate = this.date[0];
       var endOfDate = this.date[1];
 
-      events.year = startOfDate.getFullYear();
+      events.year = new Date().getFullYear();
       events.description = this.description;
       events.daysMonth = [];
 

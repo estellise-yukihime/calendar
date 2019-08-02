@@ -14717,7 +14717,7 @@ function formatObjectDate(data, eventDaysIndex) {
 
     var date = {
         year: data.year,
-        month: data.month,
+        month: data.month - 1,
         day: data.eventDays.length ? data.eventDays[eventDaysIndex].day : "01"
     };
 
@@ -50960,13 +50960,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
           date.setDate(day);
 
-          console.log("Date " + date.getDate());
-
           if (this.days.indexOf(__WEBPACK_IMPORTED_MODULE_1__helper__["c" /* weeks */][date.getDay()]) != -1) {
             var dayMonth = [];
 
-            dayMonth.push(date.getMonth());
+            // push month
+            dayMonth.push(date.getMonth() + 1);
 
+            // push day
             dayMonth.push(date.getDate());
 
             events.daysMonth.push(dayMonth);
@@ -51554,13 +51554,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         event.id = i;
         event.year = data[i].year;
-        event.month = data[i].month;
+        event.month = data[i].month - 1;
         event.nameOfMonth = data[i].nameOfMonth;
         event.totalDaysOfMonth = data[i].totalDaysOfMonth;
 
         event.eventDays = [];
 
-        var date = new Date(data[i].year, data[i].month, "01");
+        var date = new Date(data[i].year, data[i].month - 1, "01");
 
         var index = i;
 

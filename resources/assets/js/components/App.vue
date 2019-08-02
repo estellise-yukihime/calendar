@@ -118,13 +118,13 @@ export default {
 
         event.id = i;
         event.year = data[i].year;
-        event.month = data[i].month;
+        event.month = data[i].month - 1;
         event.nameOfMonth = data[i].nameOfMonth;
         event.totalDaysOfMonth = data[i].totalDaysOfMonth;
 
         event.eventDays = [];
 
-        let date = new Date(data[i].year, data[i].month, "01");
+        let date = new Date(data[i].year, data[i].month - 1, "01");
 
         let index = i;
 

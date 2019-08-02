@@ -6,7 +6,7 @@ export function formatObjectDate(data, eventDaysIndex){
 
     let date = {
         year: data.year,
-        month: data.month,
+        month: data.month - 1,
         day: data.eventDays.length ? data.eventDays[eventDaysIndex].day : "01"
     };
 

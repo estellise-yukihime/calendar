@@ -64,7 +64,6 @@ export default {
       events.description = this.description;
       events.daysMonth = [];
 
-
       for (let month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++){
         
         // plus 1, because month in javascript starts at 0;
@@ -79,13 +78,13 @@ export default {
           
           date.setDate(day);
 
-          console.log("Date " + date.getDate());
-
           if (this.days.indexOf(weeks[date.getDay()]) != -1) {
             let dayMonth = [];
 
-            dayMonth.push(date.getMonth());
+            // push month
+            dayMonth.push(date.getMonth() + 1);
 
+            // push day
             dayMonth.push(date.getDate());
 
             events.daysMonth.push(dayMonth);

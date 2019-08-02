@@ -16,7 +16,8 @@ class DayEventsResources extends JsonResource
     {
         return [
             'day' => $this->day,
-            'name' => nameOfDay($this->month_year->date, $this->day)
+            'name' => nameOfDay($this->month_year->date, $this->day),
+            'description' => $this->description
         ];
     }
 }

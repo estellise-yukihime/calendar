@@ -9,13 +9,14 @@
         <eventpicker
           v-bind:date="date"
           v-on:change-date="catchNewDate"
-          v-on:new-event="catchNewEvents"
+          v-on:new-event="fetchNewEvents"
         ></eventpicker>
       </div>
       <div class="calendar">
         <calendar v-bind:events="events"></calendar>
       </div>
     </div>
+    <notifications group="notify" :classes="notificationClasses" />
   </div>
 </template>
 
@@ -23,6 +24,7 @@
 import calendar from "./Calendar";
 import eventpicker from "./EventPicker";
 import axios from "axios";
+import {formatObjectDate, daysInMonth, isInItem2, weeks} from "../helper";
 
 export default {
   name: "App",
@@ -34,6 +36,7 @@ export default {
     let date = new Date();
 
     return {
+      notificationClasses: null,
       date: [
         new Date(date.getFullYear(), date.getMonth(), 1),
         new Date(date.getFullYear(), date.getMonth() + 1, 0)
@@ -45,7 +48,12 @@ export default {
     this.fetchEvents();
   },
   methods: {
-    catchNewEvents(newEvents) {
+
+    catchNewDate(newDate) {
+      this.date = newDate;
+    },
+
+    fetchNewEvents(newEvents) {
       let self = this;
 
       const { year, description, daysMonth } = newEvents;
@@ -58,33 +66,23 @@ export default {
         })
         .then(res => res.data)
         .then(function(res) {
+
           self.events = [];
+          self.showNotifications("notify", "success", "Success", "Successfully updated events");
+
           if (Array.isArray(res.data) && res.data.length !== 0) {
+           
+           let fromDate = formatObjectDate(res.data[0], 0)
+
+            let toDate = formatObjectDate(res.data[res.data.length - 1], res.data[res.data.length - 1].eventDays.length - 1);
+
             self.catchEvents(res.data);
-            self.dates(res.data);
+            self.catchDates(fromDate, toDate);
           }
         })
-        .catch(err => console.log(err));
-    },
-
-    catchNewDate(newDate) {
-      this.date = newDate;
-    },
-
-    dates(data) {
-      let fromStr = data[0]["month_year"] + "-" + data[0]["day_number"];
-      let toStr =
-        data[data.length - 1]["month_year"] +
-        "-" +
-        data[data.length - 1]["day_number"];
-
-      fromStr = fromStr.split("-");
-      toStr = toStr.split("-");
-
-      this.date = [
-        new Date(fromStr[0], fromStr[1] - 1, fromStr[2]),
-        new Date(toStr[0], toStr[1] - 1, toStr[2])
-      ];
+        .catch(function(err){
+          self.showNotifications("notify", "error", "Error!", "Error updating events");
+        });
     },
 
     fetchEvents() {
@@ -94,123 +92,122 @@ export default {
         .then(res => res.data)
         .then(function(res) {
           // new fetch api
-          /*
-          let data = res.data;
-          let events = [];
+          if (Array.isArray(res.data) && res.data.length !== 0) {
+            
+            let fromDate = formatObjectDate(res.data[0], 0)
 
-          console.log(data);
+            let toDate = formatObjectDate(res.data[res.data.length - 1], res.data[res.data.length - 1].eventDays.length - 1);
 
-          for (let i = 0; i < data.length; i++) {
-            let event = {};
-
-            event.year = data[i].year;
-            event.month = data[i].month;
-            event.nameOfMonth = data[i].nameOfMonth;
-
-            event.eventDays = [];
-
-            for (let i = 1; i <= event.totalDaysOfMonth; i++) {
-              let eventDays = {};
-
-              eventDays.day = i;
-              eventDays.activated = false;
-
-              for (let x = 0; x < data[i].eventDays.length; x++) {
-                if (data[i].eventDays[x].day == i) {
-                  eventDays.activated = true;
-                  eventDays.description = data[i].eventDays[x].description;
-                  break;
-                }
-              }
-            }
+            self.catchEvents(res.data);
+            self.catchDates(fromDate, toDate);
           }
-          */
-          //if (Array.isArray(res.data) && res.data.length !== 0) {
-          //  self.catchEvents(res.data);
-          //  self.dates(res.data);
-          //}
         })
         .catch(err => console.log(err));
     },
 
+    // catch the events related
+    // 
     catchEvents(data) {
-      let activatedDays = [];
-      let ym = [];
-      let x;
 
-      let nameOfDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      this.events = [];
 
-      for (x in data) {
-        if (!isInItem2(ym, [data[x]["month_year"], data[x]["month_name"]])) {
-          ym.push([data[x]["month_year"], data[x]["month_name"]]);
-        }
+      let events = [];
 
-        activatedDays.push([
-          data[x]["year"],
-          data[x]["month_number"],
-          data[x]["day_number"],
-          data[x]["description"]
-        ]);
-      }
-
-      for (x in ym) {
-        let strDate = ym[x][0].split("-");
-        let date = new Date(strDate[0], strDate[1] - 1, "01");
-
-        let days = daysInMonth(date.getMonth() + 1, date.getFullYear());
-
+      for (let i = 0; i < data.length; i++) {
         let event = {};
 
-        event.id = x;
-        event.year = strDate[0];
-        event.month = strDate[1];
-        event.monthName = ym[x][1];
-        event.days = [];
+        event.id = i;
+        event.year = data[i].year;
+        event.month = data[i].month;
+        event.nameOfMonth = data[i].nameOfMonth;
+        event.totalDaysOfMonth = data[i].totalDaysOfMonth;
 
-        date.setDate(date.getDate() - 1);
+        event.eventDays = [];
 
-        for (let i = 0; i < days; i++) {
-          date.setDate(date.getDate() + 1);
+        let date = new Date(data[i].year, data[i].month, "01");
 
-          let day = {};
+        let index = i;
 
-          day.day = date.getDate();
-          day.name = nameOfDays[date.getDay()];
-          day.description = "";
-          day.activated = false;
+        for (let i = 1; i <= event.totalDaysOfMonth; i++) {
 
-          for (let i = 0; i < activatedDays.length; i++) {
-            if (
-              activatedDays[i][0] == strDate[0] &&
-              activatedDays[i][1] == strDate[1] &&
-              activatedDays[i][2] == date.getDate()
-            ) {
-              day.activated = true;
-              day.description = activatedDays[i][3];
+          date.setDate(date.getDate() + (i - 1));
+
+          let eventDays = {};
+
+          eventDays.day = i;
+          eventDays.activated = false;
+          eventDays.dayName = weeks[date.getDay()];
+
+          for (let x = 0; x < data[index].eventDays.length; x++) {
+            if (data[index].eventDays[x].day == i) {
+              eventDays.dayName = data[index].eventDays[x].name;
+              eventDays.activated = true;
+              eventDays.description = data[index].eventDays[x].description;
+
+              data[index].eventDays.splice(x, 1);
+
+              x = data[index].eventDays.length;
             }
           }
 
-          event.days.push(day);
-        }
+          event.eventDays.push(eventDays);
 
-        this.events = [...this.events, event];
+        }
+        events.push(event);
       }
+
+      this.events = events;
+    },
+
+    // catch the dates in api
+    catchDates(from, to) {
+      this.date = [
+        new Date(from.year, from.month, from.day),
+        new Date(to.year, to.month, to.day)
+      ];
+    },
+    
+    showNotifications(group = "notify", type = "success", title = "", text = "", duration = 500, speed = 1000){
+        this.notificationClasses = "vue-notification " + type;
+        this.$notify({
+          group: group,
+          type: type,
+          title: title,
+          text: text
+        });
     }
   }
 };
 
-function daysInMonth(month, year) {
-  return new Date(year, month, 0).getDate();
+</script>
+
+<style scoped>
+
+.vue-notification {
+  padding: 10px;
+  margin: 0 5px 5px;
+ 
+  font-size: 12px;
+ 
+  color: #ffffff;
+  background: #44A4FC;
+  border-left: 5px solid #187FE7;
+ 
+  &.warn {
+    background: #ffb648;
+    border-left-color: #f48a06;
+  }
+ 
+  &.error {
+    background: #E54D42;
+    border-left-color: #B82E24;
+  }
+ 
+  &.success {
+    background: #68CD86;
+    border-left-color: #42A85F;
+  }
 }
 
-function isInItem2(array, item) {
-  for (var i = 0; i < array.length; i++) {
-    // This if statement depends on the format of your array
-    if (array[i][0] == item[0] && array[i][1] == item[1]) {
-      return true; // Found it
-    }
-  }
-  return false; // Not found
-}
-</script>
+</style>
 

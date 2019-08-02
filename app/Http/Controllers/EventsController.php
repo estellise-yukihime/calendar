@@ -55,8 +55,10 @@ class EventsController extends Controller
             } catch (\Exception $ex) {
                 DB::rollback();
             }
-
-            $eventCollections->push($monthYear);
+            
+            if(!$eventCollections->contains('id', $monthYear->id)){
+                $eventCollections->push($monthYear);
+            }
         }
 
         return MonthEventsResource::collection($eventCollections);

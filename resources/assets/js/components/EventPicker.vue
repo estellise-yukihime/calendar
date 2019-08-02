@@ -11,30 +11,6 @@
           placeholder="Event"
         />
       </div>
-      <!-- <div class="mb-2 clearfix">
-        <div class="float-left mr-4 date-div">
-          <span class="d-block">From</span>
-          <date-picker
-            v-model="fromDate"
-            lang="en"
-            type="date"
-            format="YYYY-MM-dd"
-            class="date-picker"
-            confirm
-          ></date-picker>
-        </div>
-        <div class="float-left date-div">
-          <span class="d-block">To</span>
-          <date-picker
-            v-model="toDate"
-            lang="en"
-            type="date"
-            format="YYYY-MM-dd"
-            class="date-picker"
-            disable="disableDates"
-          ></date-picker>
-        </div>
-      </div>-->
       <date-picker v-model="dateProp" range lang="en" format="MM-DD" confirm class="w-90"></date-picker>
 
       <div class="mt-2 box">
@@ -59,7 +35,9 @@
 </template>
 
 <script>
+
 import DatePicker from "vue2-datepicker";
+import {daysInMonth, weeks} from "../helper";
 
 export default {
   name: "EventPicker",
@@ -77,9 +55,7 @@ export default {
     newEvents(e) {
       e.preventDefault();
 
-      let events = {};
-
-      let nameOfDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      let events = {}; 
 
       let startOfDate = this.date[0];
       let endOfDate = this.date[1];
@@ -88,22 +64,27 @@ export default {
       events.description = this.description;
       events.daysMonth = [];
 
-      for (
-        let month = startOfDate.getMonth();
-        month <= endOfDate.getMonth();
-        month++
-      ) {
-        let date = new Date(events.year, month + 1, 0);
 
-        let totalDays = daysInMonth(date.getMonth(), date.getFullYear());
+      for (let month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++){
+        
+        // plus 1, because month in javascript starts at 0;
+        // carbon month in php starts at 1
+        let date = new Date(events.year, month, "01");
 
-        for (let day = startOfDate.getDate() - 1; day <= totalDays; day++) {
-          date.setDate(day + 1);
+        let totalDays = month == endOfDate.getMonth() ? endOfDate.getDate() : daysInMonth(date.getFullYear(), date.getMonth());
 
-          if (this.days.indexOf(nameOfDays[date.getDay()]) != -1) {
+        let day = month == startOfDate.getMonth() ? startOfDate.getDate() : 1;
+
+        for (; day <= totalDays; day++) {
+          
+          date.setDate(day);
+
+          console.log("Date " + date.getDate());
+
+          if (this.days.indexOf(weeks[date.getDay()]) != -1) {
             let dayMonth = [];
 
-            dayMonth.push(date.getMonth() + 1);
+            dayMonth.push(date.getMonth());
 
             dayMonth.push(date.getDate());
 
@@ -127,9 +108,6 @@ export default {
   }
 };
 
-function daysInMonth(month, year) {
-  return new Date(year, month, 0).getDate();
-}
 </script>
 
 <style scoped>

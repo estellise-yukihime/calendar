@@ -60,34 +60,37 @@ export default {
       let startOfDate = this.date[0];
       let endOfDate = this.date[1];
 
-      events.year = new Date().getFullYear();
-      events.description = this.description;
-      events.daysMonth = [];
+      if(startOfDate !== null && endOfDate !== null)
+      {
+        events.year = new Date().getFullYear();
+        events.description = this.description;
+        events.daysMonth = [];
 
-      for (let month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++){
-        
-        // plus 1, because month in javascript starts at 0;
-        // carbon month in php starts at 1
-        let date = new Date(events.year, month, "01");
-
-        let totalDays = month == endOfDate.getMonth() ? endOfDate.getDate() : daysInMonth(date.getFullYear(), date.getMonth());
-
-        let day = month == startOfDate.getMonth() ? startOfDate.getDate() : 1;
-
-        for (; day <= totalDays; day++) {
+        for (let month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++){
           
-          date.setDate(day);
+          // plus 1, because month in javascript starts at 0;
+          // carbon month in php starts at 1
+          let date = new Date(events.year, month, "01");
 
-          if (this.days.indexOf(weeks[date.getDay()]) != -1) {
-            let dayMonth = [];
+          let totalDays = month == endOfDate.getMonth() ? endOfDate.getDate() : daysInMonth(date.getFullYear(), date.getMonth());
 
-            // push month
-            dayMonth.push(date.getMonth() + 1);
+          let day = month == startOfDate.getMonth() ? startOfDate.getDate() : 1;
 
-            // push day
-            dayMonth.push(date.getDate());
+          for (; day <= totalDays; day++) {
+            
+            date.setDate(day);
 
-            events.daysMonth.push(dayMonth);
+            if (this.days.indexOf(weeks[date.getDay()]) != -1) {
+              let dayMonth = [];
+
+              // push month
+              dayMonth.push(date.getMonth() + 1);
+
+              // push day
+              dayMonth.push(date.getDate());
+
+              events.daysMonth.push(dayMonth);
+            }
           }
         }
       }

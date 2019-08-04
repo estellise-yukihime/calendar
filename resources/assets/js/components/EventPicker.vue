@@ -67,7 +67,6 @@ export default {
         events.daysMonth = [];
 
         for (let month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++){
-          
           // plus 1, because month in javascript starts at 0;
           // carbon month in php starts at 1
           let date = new Date(events.year, month, "01");

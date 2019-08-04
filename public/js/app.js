@@ -14779,7 +14779,7 @@ Vue.component('calendar', __webpack_require__(16));
 Vue.component('eventpicker', __webpack_require__(17));
 Vue.component('app', __webpack_require__(56));
 
-Vue.config.devtools = false;
+Vue.config.productionTip = false;
 
 var app = new Vue({
   el: '#app'

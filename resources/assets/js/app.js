@@ -24,7 +24,7 @@ Vue.component('calendar', require('./components/Calendar.vue'));
 Vue.component('eventpicker', require('./components/EventPicker.vue'));
 Vue.component('app', require('./components/App.vue'));
 
-Vue.config.devtools = false
+Vue.config.devtools = false;
 
 
 const app = new Vue({

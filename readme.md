@@ -3,6 +3,9 @@
 ## Install
 
 ``` bash
+# checkout to production
+git checkout production
+
 # Install Dependencies
 composer install
 

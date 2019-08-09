@@ -28,10 +28,13 @@ class EventsController extends Controller
 
         $eventCollections = collect([]);
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('month_events')->truncate();
-        DB::table('day_events')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        if($date)
+        {   
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            DB::table('month_events')->truncate();
+            DB::table('day_events')->truncate();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
 
         foreach ($dayMonth as $days) {
 

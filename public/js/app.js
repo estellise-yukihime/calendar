@@ -14779,6 +14779,8 @@ Vue.component('calendar', __webpack_require__(16));
 Vue.component('eventpicker', __webpack_require__(17));
 Vue.component('app', __webpack_require__(56));
 
+Vue.config.productionTip = false;
+
 var app = new Vue({
   el: '#app'
 });
@@ -50942,34 +50944,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var startOfDate = this.date[0];
       var endOfDate = this.date[1];
 
-      events.year = new Date().getFullYear();
-      events.description = this.description;
-      events.daysMonth = [];
+      if (startOfDate !== null && endOfDate !== null) {
+        events.year = new Date().getFullYear();
+        events.description = this.description;
+        events.daysMonth = [];
 
-      for (var month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++) {
+        for (var month = startOfDate.getMonth(); month <= endOfDate.getMonth(); month++) {
+          // plus 1, because month in javascript starts at 0;
+          // carbon month in php starts at 1
+          var date = new Date(events.year, month, "01");
 
-        // plus 1, because month in javascript starts at 0;
-        // carbon month in php starts at 1
-        var date = new Date(events.year, month, "01");
+          var totalDays = month == endOfDate.getMonth() ? endOfDate.getDate() : Object(__WEBPACK_IMPORTED_MODULE_1__helper__["a" /* daysInMonth */])(date.getFullYear(), date.getMonth());
 
-        var totalDays = month == endOfDate.getMonth() ? endOfDate.getDate() : Object(__WEBPACK_IMPORTED_MODULE_1__helper__["a" /* daysInMonth */])(date.getFullYear(), date.getMonth());
+          var day = month == startOfDate.getMonth() ? startOfDate.getDate() : 1;
 
-        var day = month == startOfDate.getMonth() ? startOfDate.getDate() : 1;
+          for (; day <= totalDays; day++) {
 
-        for (; day <= totalDays; day++) {
+            date.setDate(day);
 
-          date.setDate(day);
+            if (this.days.indexOf(__WEBPACK_IMPORTED_MODULE_1__helper__["c" /* weeks */][date.getDay()]) != -1) {
+              var dayMonth = [];
 
-          if (this.days.indexOf(__WEBPACK_IMPORTED_MODULE_1__helper__["c" /* weeks */][date.getDay()]) != -1) {
-            var dayMonth = [];
+              // push month
+              dayMonth.push(date.getMonth() + 1);
 
-            // push month
-            dayMonth.push(date.getMonth() + 1);
+              // push day
+              dayMonth.push(date.getDate());
 
-            // push day
-            dayMonth.push(date.getDate());
-
-            events.daysMonth.push(dayMonth);
+              events.daysMonth.push(dayMonth);
+            }
           }
         }
       }
